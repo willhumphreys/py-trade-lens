@@ -28,6 +28,9 @@ jobs:
       - name: Install Dependencies
         run: pip install --no-cache-dir -r requirements.txt
 
+      - name: Install Pytest
+        run: pip install pytest
+
       - name: Run Tests
         run: pytest  # Adjust this if you use another test runner
 
