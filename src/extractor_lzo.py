@@ -4,10 +4,10 @@ import boto3
 import subprocess
 
 
-def download_and_decompress_lzo(symbol, scenario, output_dir="output", bucket_name="mochi-traders"):
+def download_and_decompress_trader_file(symbol, scenario, output_dir="output", bucket_name="mochi-traders"):
     """
     Downloads an LZO-compressed CSV file from S3, saves the archive into an archive directory,
-    and decompresses it into an output directory under "traders".
+    and decompresses it into an output directory under "traders". Returns the path of the decompressed CSV file.
     """
     s3_key = f"{symbol}/{scenario}/traders--{scenario}___{symbol}.csv.lzo"
 
@@ -34,3 +34,4 @@ def download_and_decompress_lzo(symbol, scenario, output_dir="output", bucket_na
         raise
 
     print(f"LZO decompression completed. CSV written to {destination_csv_path}")
+    return destination_csv_path

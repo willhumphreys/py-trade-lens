@@ -1,6 +1,7 @@
 import argparse
-from extractor import download_and_unzip
-from extractor_lzo import download_and_decompress_lzo
+from extractor import download_and_unzip_trades
+from extractor_lzo import download_and_decompress_trader_file
+from trader_verification import verify_matching_trader_ids
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Download and unpack a trade archive from S3.")
@@ -18,8 +19,9 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    download_and_unzip(args.symbol, args.scenario)
-    download_and_decompress_lzo(args.symbol, args.scenario)
+    download_and_unzip_trades(args.symbol, args.scenario)
+    trader_csv_file =  download_and_decompress_trader_file(args.symbol, args.scenario)
+    verify_matching_trader_ids(f"output/trades", trader_csv_file)
 
 if __name__ == "__main__":
     main()

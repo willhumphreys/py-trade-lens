@@ -4,10 +4,10 @@ import boto3
 import zipfile
 
 
-def download_and_unzip(symbol, scenario, output_dir="output", bucket_name="mochi-trade-extracts"):
+def download_and_unzip_trades(symbol, scenario, output_dir="output", bucket_name="mochi-trade-extracts"):
     """
     Downloads the specified trade archive from the given S3 bucket,
-    saves the ZIP file to an archive directory, and then unzips it into an output directory under "trades".
+    saves the ZIP file to an archive directory, and then unzips it into an output directory under 'trades'.
 
     :param symbol: The symbol name (e.g. "btc-1mF")
     :param scenario: The scenario name (e.g. "s_-3000..-100..400___...")
@@ -17,7 +17,7 @@ def download_and_unzip(symbol, scenario, output_dir="output", bucket_name="mochi
     s3_client = boto3.client("s3")
     object_key = f"{symbol}/{scenario}.zip"
 
-    # Set up archive destination for trades
+    # Create archive destination for trades
     archives_dir = os.path.join(output_dir, "archives", "trades")
     os.makedirs(archives_dir, exist_ok=True)
     local_zip_file = os.path.join(archives_dir, f"{scenario}.zip")
@@ -25,8 +25,8 @@ def download_and_unzip(symbol, scenario, output_dir="output", bucket_name="mochi
     print(f"Downloading s3://{bucket_name}/{object_key} to {local_zip_file} ...")
     s3_client.download_file(bucket_name, object_key, local_zip_file)
 
-    # Set up output destination for extracted trades
-    destination_folder = os.path.join(output_dir, "trades", scenario)
+    # Define output destination for extracted trade files (directly under 'trades')
+    destination_folder = os.path.join(output_dir, "trades")
     os.makedirs(destination_folder, exist_ok=True)
 
     print(f"Unzipping {local_zip_file} to {destination_folder} ...")
