@@ -1,4 +1,6 @@
 import argparse
+import os
+import shutil
 from extractor import download_and_unzip_trades
 from extractor_lzo import download_and_decompress_trader_file
 from trader_verification import verify_matching_trader_ids
@@ -18,6 +20,15 @@ def parse_arguments():
     return parser.parse_args()
 
 def main():
+    # Clean up the output directory
+    output_dir = "output"
+    if os.path.exists(output_dir):
+        print(f"Deleting existing '{output_dir}' directory...")
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"Created fresh '{output_dir}' directory.")
+
+
     args = parse_arguments()
     download_and_unzip_trades(args.symbol, args.scenario)
     trader_csv_file =  download_and_decompress_trader_file(args.symbol, args.scenario)
