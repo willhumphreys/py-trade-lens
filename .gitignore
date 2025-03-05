@@ -79,3 +79,5 @@ docker-compose.override.yml
 
 .csv
 .lzo
+
+output

@@ -32,7 +32,7 @@ def main():
     args = parse_arguments()
     download_and_unzip_trades(args.symbol, args.scenario)
     trader_csv_file =  download_and_decompress_trader_file(args.symbol, args.scenario)
-    verify_matching_trader_ids(f"output/trades", trader_csv_file)
+    verify_matching_trader_ids(f"output/trades/formatted-trades", trader_csv_file)
 
 if __name__ == "__main__":
     main()
