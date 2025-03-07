@@ -1,7 +1,10 @@
 # trader_verification.py
+import csv
 import os
 import sys
-import csv
+
+import boto3
+
 from extractor import download_and_unzip_trades
 from extractor_lzo import download_and_decompress_trader_file
 
@@ -31,16 +34,14 @@ def verify_matching_trader_ids(trades_dir, trader_csv_file):
         if fname.lower().endswith(".csv"):
             trade_trader_id = os.path.splitext(fname)[0]
             if trade_trader_id not in trader_ids:
-                raise RuntimeError(
-                    f"Trade file '{fname}' does not have a matching traderId in {trader_csv_file}"
-                )
+                raise RuntimeError(f"Trade file '{fname}' does not have a matching traderId in {trader_csv_file}")
             else:
                 print(f"Verified: Trade file '{fname}' matches traderId.")
 
     print("All trade files have matching trader IDs.")
 
 
-def run_pipeline(symbol, scenario, output_dir):
+def run_pipeline(symbol, scenario, output_dir, s3_client):
     """
     Run the full pipeline:
       1. Download and unzip the trade archive.
@@ -53,7 +54,7 @@ def run_pipeline(symbol, scenario, output_dir):
     :param output_dir: Base directory for storing archives and extracted output.
     """
     print("Starting trade extraction...")
-    download_and_unzip_trades(symbol, scenario, output_dir, "mochi-trade-extracts")
+    download_and_unzip_trades(symbol, scenario, output_dir, "mochi-trade-extracts", s3_client)
 
     print("Starting trader extraction...")
     trader_csv = download_and_decompress_trader_file(symbol, scenario, output_dir=output_dir)
@@ -72,4 +73,6 @@ if __name__ == "__main__":
     symbol = sys.argv[1]
     scenario = sys.argv[2]
 
-    run_pipeline(symbol, scenario, os.path.join("output", symbol, scenario))
+    s3_client = boto3.client("s3")
+
+    run_pipeline(symbol, scenario, os.path.join("output", symbol, scenario), s3_client)
