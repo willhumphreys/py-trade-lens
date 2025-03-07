@@ -22,7 +22,7 @@ def verify_matching_trader_ids(trades_dir, trader_csv_file):
         reader = csv.DictReader(csvfile)
         for row in reader:
             # Assumes column name is exactly "traderId"
-            trader_ids.add(str(row["traderId"]).strip())
+            trader_ids.add(str(row["traderid"]).strip())
 
     print(f"Found trader IDs in trader CSV: {trader_ids}")
 
