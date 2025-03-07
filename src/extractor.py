@@ -9,6 +9,7 @@ def download_and_unzip_trades(symbol, scenario, output_dir, bucket_name, s3_clie
     Downloads the specified trade archive from the given S3 bucket,
     saves the ZIP file to an archive directory, and then unzips it into an output directory under 'trades'.
 
+    :param s3_client: The boto3 S3 client object.
     :param symbol: The symbol name (e.g. "btc-1mF")
     :param scenario: The scenario name (e.g. "s_-3000..-100..400___...")
     :param output_dir: The base output directory where archives and extracted files will be saved.
