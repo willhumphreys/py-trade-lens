@@ -62,16 +62,18 @@ def process_file(file_name, input_dir):
 
     return trader_id, max_drawdown, max_profit, profit_factor, composite_score, risk_reward_balance
 
-def process_and_calculate_summary(symbol, scenario):
-    input_dir = os.path.join('output/trades/formatted-trades')  # Directory with CSV files
-    summary_output_dir = 'output/summary'
+def process_and_calculate_summary(scenario, input_directory, output_directory):
+      # Directory with CSV files
+
+    summary_output_dir = os.path.join(output_directory, "summary")
+
     create_output_directory(summary_output_dir)
 
     summary_records = []
 
-    for file_name in os.listdir(input_dir):
+    for file_name in os.listdir(input_directory):
         if file_name.endswith('.csv'):
-            trader_id, max_drawdown, max_profit, profit_factor, composite_score, risk_reward_balance = process_file(file_name, input_dir)
+            trader_id, max_drawdown, max_profit, profit_factor, composite_score, risk_reward_balance = process_file(file_name, input_directory)
             summary_records.append((trader_id, max_drawdown, max_profit, profit_factor, composite_score, risk_reward_balance))
 
     summary_df = pd.DataFrame(summary_records, columns=['TraderID', 'MaxDrawdown', 'MaxProfit', 'ProfitFactor', 'CompositeScore', 'RiskRewardBalance'])
@@ -86,8 +88,10 @@ def process_and_calculate_summary(symbol, scenario):
     save_filtered_summary(sorted_filtered_df, filtered_summary_path)
     logging.info(f"Filtered summary saved to {filtered_summary_path}")
 
+    best_trades_base_path = os.path.join(output_directory, "trades", scenario + ".csv")
+    filtered_trade_path = os.path.join(output_directory, "trades", "filtered-" + scenario + ".csv")
 
-    process_filtered_summary(filtered_summary_path, symbol, scenario)
+    process_filtered_summary(filtered_summary_path, scenario, best_trades_base_path, filtered_trade_path )
 
 
 
@@ -95,7 +99,7 @@ def process_and_calculate_summary(symbol, scenario):
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def process_filtered_summary(summary_file, symbol, scenario):
+def process_filtered_summary(summary_file, scenario, best_trades_base_path, filtered_trade_path):
     """
     Process each entry in the filtered summary to extract trader IDs and scenarios, and find matching trades.
     """
@@ -103,22 +107,14 @@ def process_filtered_summary(summary_file, symbol, scenario):
         reader = csv.DictReader(summary_csv)
         for row in reader:
             trader_id = row['TraderID']
+            find_matching_trades(trader_id, scenario, best_trades_base_path, filtered_trade_path)
 
 
-
-            find_matching_trades(trader_id, symbol, scenario)
-
-
-def find_matching_trades(trader_id, symbol, scenario):
-
-    best_trades_base_path = os.path.join("output/trades", scenario + ".csv")
+def find_matching_trades(trader_id, scenario, best_trades_base_path, filtered_trade_path):
 
     found_match = False
     print(f"Looking for best trades file in: {best_trades_base_path}")
 
-
-    # Define the output file path
-    output_file_path = os.path.join("output", "trades", "filtered-" + scenario + ".csv")
     found_match = False
 
 
@@ -129,12 +125,12 @@ def find_matching_trades(trader_id, symbol, scenario):
 
 
     with open(best_trades_base_path, 'r', newline='') as infile, \
-            open(output_file_path, 'a', newline='') as outfile:
+            open(filtered_trade_path, 'a', newline='') as outfile:
         reader = csv.DictReader(infile)
         writer = csv.DictWriter(outfile, fieldnames=reader.fieldnames)
 
         # Check if the output file is empty; if so, write the header
-        if os.path.getsize(output_file_path) == 0:
+        if os.path.getsize(filtered_trade_path) == 0:
             writer.writeheader()
 
         # Iterate over rows and search for a matching trader ID

@@ -40,7 +40,7 @@ def verify_matching_trader_ids(trades_dir, trader_csv_file):
     print("All trade files have matching trader IDs.")
 
 
-def run_pipeline(symbol, scenario, output_dir="output"):
+def run_pipeline(symbol, scenario, output_dir):
     """
     Run the full pipeline:
       1. Download and unzip the trade archive.
@@ -53,7 +53,7 @@ def run_pipeline(symbol, scenario, output_dir="output"):
     :param output_dir: Base directory for storing archives and extracted output.
     """
     print("Starting trade extraction...")
-    download_and_unzip_trades(symbol, scenario, output_dir=output_dir)
+    download_and_unzip_trades(symbol, scenario, output_dir, "mochi-trade-extracts")
 
     print("Starting trader extraction...")
     trader_csv = download_and_decompress_trader_file(symbol, scenario, output_dir=output_dir)
@@ -72,4 +72,4 @@ if __name__ == "__main__":
     symbol = sys.argv[1]
     scenario = sys.argv[2]
 
-    run_pipeline(symbol, scenario)
+    run_pipeline(symbol, scenario, os.path.join("output", symbol, scenario))
