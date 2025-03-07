@@ -40,7 +40,7 @@ def main():
     verify_matching_trader_ids(formatted_trades_dir, os.path.join(output_directory, "trades", args.scenario + ".csv"))
 
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
-    process_and_plot_files(formatted_trades_dir, output_directory.join("graphs"))
+    process_and_plot_files(formatted_trades_dir, os.path.join(output_directory, "graphs"))
 
     compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-trade-analysis", s3_client)
 
