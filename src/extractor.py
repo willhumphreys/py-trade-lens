@@ -4,7 +4,7 @@ import boto3
 import zipfile
 
 
-def download_and_unzip_trades(symbol, scenario, output_dir, bucket_name):
+def download_and_unzip_trades(symbol, scenario, output_dir, bucket_name, s3_client):
     """
     Downloads the specified trade archive from the given S3 bucket,
     saves the ZIP file to an archive directory, and then unzips it into an output directory under 'trades'.
@@ -14,7 +14,7 @@ def download_and_unzip_trades(symbol, scenario, output_dir, bucket_name):
     :param output_dir: The base output directory where archives and extracted files will be saved.
     :param bucket_name: The S3 bucket containing the archives.
     """
-    s3_client = boto3.client("s3")
+
     object_key = f"{symbol}/{scenario}.zip"
 
     # Create archive destination for trades

@@ -2,10 +2,13 @@ import argparse
 import os
 import shutil
 
+import boto3
+
 from extractor import download_and_unzip_trades
 from processing.coloured_trades_and_profit import process_and_plot_files
 from src.processing.enrich_trades import process_and_calculate_summary
 from trader_verification import verify_matching_trader_ids
+from uploading.s3_directory_compression_utilities import compress_and_push_all_scenarios
 
 
 def parse_arguments():
@@ -30,13 +33,16 @@ def main():
 
     os.makedirs(output_directory, exist_ok=True)
 
-    download_and_unzip_trades(args.symbol, args.scenario, output_directory, "mochi-trade-extracts")
+    s3_client = boto3.client("s3")
+
+    download_and_unzip_trades(args.symbol, args.scenario, output_directory, "mochi-trade-extracts", s3_client)
     formatted_trades_dir = os.path.join(output_directory, "trades", "formatted-trades")
     verify_matching_trader_ids(formatted_trades_dir, os.path.join(output_directory, "trades", args.scenario + ".csv"))
 
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
     process_and_plot_files(formatted_trades_dir, output_directory.join("graphs"))
 
+    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-trade-analysis", s3_client)
 
 if __name__ == "__main__":
     main()
