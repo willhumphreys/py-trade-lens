@@ -35,14 +35,14 @@ def main():
 
     s3_client = boto3.client("s3")
 
-    download_and_unzip_trades(args.symbol, args.scenario, output_directory, "mochi-trade-extracts", s3_client)
+    download_and_unzip_trades(args.symbol, args.scenario, output_directory, "mochi-prod-trade-extracts", s3_client)
     formatted_trades_dir = os.path.join(output_directory, "trades", "formatted-trades")
     verify_matching_trader_ids(formatted_trades_dir, os.path.join(output_directory, "trades", args.scenario + ".csv"))
 
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
     process_and_plot_files(formatted_trades_dir, os.path.join(output_directory, "graphs"))
 
-    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-trade-analysis", s3_client)
+    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-prod-trade-performance-graphs", s3_client)
 
 if __name__ == "__main__":
     main()

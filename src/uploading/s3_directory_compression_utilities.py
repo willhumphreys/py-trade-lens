@@ -29,7 +29,7 @@ def compress_directory_to_zip(source_dir: str, zip_file: str) -> None:
 def compress_and_push_scenario_zip(
         scenario_dir: str,
         s3_key: str,
-        bucket_name: str = "mochi-trade-extracts",
+        bucket_name: str = "mochi-prod-trade-extracts",
         s3_client=None
 ) -> None:
     """

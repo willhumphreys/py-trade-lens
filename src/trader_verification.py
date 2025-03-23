@@ -54,7 +54,7 @@ def run_pipeline(symbol, scenario, output_dir, s3_client):
     :param output_dir: Base directory for storing archives and extracted output.
     """
     print("Starting trade extraction...")
-    download_and_unzip_trades(symbol, scenario, output_dir, "mochi-trade-extracts", s3_client)
+    download_and_unzip_trades(symbol, scenario, output_dir, "mochi-prod-trade-extracts", s3_client)
 
     print("Starting trader extraction...")
     trader_csv = download_and_decompress_trader_file(symbol, scenario, output_dir=output_dir)
