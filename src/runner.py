@@ -8,6 +8,7 @@ from extractor import download_and_unzip_trades
 from processing.coloured_trades_and_profit import process_and_plot_files
 from src.processing.download_and_filter_minute_stock_data import download_and_read_minute_data, filter_valid_minute_data
 from src.processing.enrich_trades import process_and_calculate_summary
+from src.processing.trade_execution_verifier import verify_trade_execution
 from trader_verification import verify_matching_trader_ids
 from uploading.s3_directory_compression_utilities import compress_and_push_all_scenarios
 
@@ -50,6 +51,7 @@ def main():
     download_and_unzip_trades(args.symbol, args.scenario, output_directory, trade_extracts_bucket, s3_client)
     formatted_trades_dir = os.path.join(output_directory, "trades", "formatted-trades")
     verify_matching_trader_ids(formatted_trades_dir, os.path.join(output_directory, "trades", args.scenario + ".csv"))
+    verify_trade_execution(formatted_trades_dir, valid_data)
 
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
     process_and_plot_files(formatted_trades_dir, os.path.join(output_directory, "graphs"), valid_data)
