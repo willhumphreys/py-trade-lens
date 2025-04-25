@@ -12,7 +12,11 @@ def read_trader_profit_csv(file_path):
         header_map = {name: index for index, name in enumerate(header)}
 
         for row in reader:
-            date = datetime.strptime(row[header_map['PlaceDateTime']], DATE_FORMAT)
+            date_str = row[header_map['PlaceDateTime']]
+            if len(date_str) == 10:  # 'YYYY-MM-DD' has length 10
+                date_str += ' 00:00:00'
+
+            date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
             filled_price = int(row[header_map['FilledPrice']])
             closing_price = int(row[header_map['ClosingPrice']])
             profit = int(row[header_map['Profit']])
