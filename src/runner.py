@@ -18,6 +18,7 @@ def parse_arguments():
     parser.add_argument("--symbol", required=True, help="The symbol name (e.g. 'btc-1mF')")
     parser.add_argument("--scenario", required=True,
                         help="The scenario string (e.g. 's_-3000..-100..400___l_100..7500..400___...')")
+    parser.add_argument("--back_test_id", help="The back test ID")
     return parser.parse_args()
 
 
@@ -45,6 +46,9 @@ def main():
 
     valid_data = filter_valid_minute_data(minute_data)
     print(f"Valid price rows: {len(valid_data)}")
+
+    if args.back_test_id:
+        print(f"Back test ID: {args.back_test_id}")
 
     trade_extracts_bucket =  os.environ.get('MOCHI_PROD_TRADE_EXTRACTS')
 
