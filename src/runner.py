@@ -38,7 +38,7 @@ def main():
 
     s3_client = boto3.client("s3")
 
-    minute_data = download_and_read_minute_data(args.symbol, s3_client, output_directory)
+    minute_data = download_and_read_minute_data(args.symbol, s3_client, output_directory, args.back_test_id)
 
     # Display information about the data
     print(f"\nMinute data for {args.symbol}:")
@@ -52,7 +52,7 @@ def main():
 
     trade_extracts_bucket =  os.environ.get('MOCHI_PROD_TRADE_EXTRACTS')
 
-    download_and_unzip_trades(args.symbol, args.scenario, output_directory, trade_extracts_bucket, s3_client)
+    download_and_unzip_trades(args.symbol, args.scenario, output_directory, trade_extracts_bucket, s3_client, args.back_test_id)
     formatted_trades_dir = os.path.join(output_directory, "trades", "formatted-trades")
     verify_matching_trader_ids(formatted_trades_dir, os.path.join(output_directory, "trades", args.scenario + ".csv"))
     verify_trade_execution(formatted_trades_dir, valid_data)
@@ -60,7 +60,7 @@ def main():
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
     process_and_plot_files(formatted_trades_dir, os.path.join(output_directory, "graphs"), valid_data)
 
-    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-prod-trade-performance-graphs", s3_client)
+    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-prod-trade-performance-graphs", s3_client, args.back_test_id)
 
 if __name__ == "__main__":
     main()

@@ -30,7 +30,8 @@ def compress_and_push_scenario_zip(
         scenario_dir: str,
         s3_key: str,
         bucket_name: str = "mochi-prod-trade-extracts",
-        s3_client=None
+        s3_client=None,
+        back_test_id=None
 ) -> None:
     """
     Compresses the provided scenario directory into a ZIP file and uploads it to S3.
@@ -39,6 +40,7 @@ def compress_and_push_scenario_zip(
     :param s3_key: The S3 key to use when uploading the ZIP archive.
     :param bucket_name: The S3 bucket to which the archive is uploaded.
     :param s3_client: Optional boto3 S3 client. If None, a new client is created.
+    :param back_test_id: The back test ID to prefix S3 keys with.
     """
     if not os.path.isdir(scenario_dir):
         logger.warning("Scenario directory does not exist or is not a directory: %s", scenario_dir)
@@ -57,9 +59,12 @@ def compress_and_push_scenario_zip(
         compress_directory_to_zip(scenario_dir, temp_zip)
         logger.info("Successfully compressed '%s' into temporary ZIP: %s", scenario_dir, temp_zip)
 
+        # Prefix the S3 key with back_test_id if provided
+        final_s3_key = f"{back_test_id}/{s3_key}" if back_test_id else s3_key
+
         # Upload the ZIP file to S3.
-        s3_client.upload_file(temp_zip, bucket_name, s3_key)
-        logger.info("Uploaded compressed ZIP as key '%s' to bucket '%s'", s3_key, bucket_name)
+        s3_client.upload_file(temp_zip, bucket_name, final_s3_key)
+        logger.info("Uploaded compressed ZIP as key '%s' to bucket '%s'", final_s3_key, bucket_name)
     except Exception as e:
         logger.error("Error during ZIP compression/upload for directory '%s': %s", scenario_dir, str(e), exc_info=True)
     finally:
@@ -74,15 +79,17 @@ def compress_and_push_scenario_zip(
 def compress_and_push_all_scenarios(
         symbol_dir: str,
         bucket_name: str,
-        s3_client: boto3.client
+        s3_client: boto3.client,
+        back_test_id=None
 ) -> None:
     """
     Loops through all scenario directories within the symbol directory, compressing and uploading each.
-    The S3 key for each ZIP is in the format "symbol/scenarioName.zip".
+    The S3 key for each ZIP is in the format "symbol/scenarioName.zip" or "back_test_id/symbol/scenarioName.zip" if back_test_id is provided.
 
     :param symbol_dir: The parent directory containing scenario subdirectories.
     :param bucket_name: The S3 bucket to which the archive is uploaded.
     :param s3_client: Optional boto3 S3 client.
+    :param back_test_id: The back test ID to prefix S3 keys with.
     """
     if not os.path.isdir(symbol_dir):
         logger.warning("Symbol directory does not exist or is not a directory: %s", symbol_dir)
@@ -97,4 +104,4 @@ def compress_and_push_all_scenarios(
         if os.path.isdir(scenario_path):
             # Create an S3 key that mirrors the directory structure: symbol/scenarioName.zip
             s3_key = f"{symbol}/{scenario}.zip"
-            compress_and_push_scenario_zip(scenario_path, s3_key, bucket_name, s3_client)
+            compress_and_push_scenario_zip(scenario_path, s3_key, bucket_name, s3_client, back_test_id)
