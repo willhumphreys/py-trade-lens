@@ -59,14 +59,11 @@ def compress_and_push_scenario_zip(
         compress_directory_to_zip(scenario_dir, temp_zip)
         logger.info("Successfully compressed '%s' into temporary ZIP: %s", scenario_dir, temp_zip)
 
-        # Prefix the S3 key with back_test_id if provided
-        final_s3_key = f"{back_test_id}/{s3_key}" if back_test_id else s3_key
-
-        # Upload the ZIP file to S3.
-        s3_client.upload_file(temp_zip, bucket_name, final_s3_key)
-        logger.info("Uploaded compressed ZIP as key '%s' to bucket '%s'", final_s3_key, bucket_name)
+        s3_client.upload_file(temp_zip, bucket_name, f"{s3_key}")
+        logger.info("Uploaded compressed ZIP as key '%s' to bucket '%s'", f"{s3_key}", bucket_name)
     except Exception as e:
         logger.error("Error during ZIP compression/upload for directory '%s': %s", scenario_dir, str(e), exc_info=True)
+        raise e
     finally:
         # Clean up the temporary ZIP file.
         if temp_zip and os.path.exists(temp_zip):
@@ -74,6 +71,7 @@ def compress_and_push_scenario_zip(
                 os.remove(temp_zip)
             except Exception as e:
                 logger.warning("Could not delete temporary ZIP file '%s': %s", temp_zip, str(e))
+                raise e
 
 
 def compress_and_push_all_scenarios(
