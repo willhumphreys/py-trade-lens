@@ -369,7 +369,7 @@ def process_and_calculate_summary(scenario, input_directory, output_directory):
                  if os.path.exists(filtered_trade_path): os.remove(filtered_trade_path)
                  process_filtered_summary(filtered_summary_path, scenario, best_trades_base_path, filtered_trade_path)
             else:
-                 logging.warning(f"Base trades file not found, skipping filtered trade extraction: {best_trades_base_path}")
+                raise FileNotFoundError(f"Base trades file not found: {best_trades_base_path}")
 
         except Exception as e:
             logging.error(f"Error during filtering or filtered processing: {e}", exc_info=True)

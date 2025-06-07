@@ -32,7 +32,7 @@ def main():
     print(f"Created fresh '{output_dir}' directory.")
 
     args = parse_arguments()
-    output_directory = os.path.join(output_dir, args.symbol, args.scenario)
+    output_directory = os.path.join(output_dir, args.back_test_id, args.symbol, args.scenario)
 
     os.makedirs(output_directory, exist_ok=True)
 
@@ -60,7 +60,7 @@ def main():
     process_and_calculate_summary(args.scenario, formatted_trades_dir, output_directory)
     process_and_plot_files(formatted_trades_dir, os.path.join(output_directory, "graphs"), valid_data)
 
-    compress_and_push_all_scenarios(os.path.join(output_dir, args.symbol), "mochi-prod-trade-performance-graphs", s3_client, args.back_test_id)
+    compress_and_push_all_scenarios(os.path.join(output_dir, args.back_test_id, args.symbol), "mochi-prod-trade-performance-graphs", s3_client, args.back_test_id)
 
 if __name__ == "__main__":
     main()

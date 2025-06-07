@@ -80,7 +80,7 @@ def compress_and_push_all_scenarios(
         symbol_dir: str,
         bucket_name: str,
         s3_client: boto3.client,
-        back_test_id=None
+        back_test_id: str
 ) -> None:
     """
     Loops through all scenario directories within the symbol directory, compressing and uploading each.
@@ -91,17 +91,17 @@ def compress_and_push_all_scenarios(
     :param s3_client: Optional boto3 S3 client.
     :param back_test_id: The back test ID to prefix S3 keys with.
     """
+
     if not os.path.isdir(symbol_dir):
         logger.warning("Symbol directory does not exist or is not a directory: %s", symbol_dir)
-        return
+        raise ValueError("Symbol directory does not exist or is not a directory")
 
     symbol = os.path.basename(symbol_dir)
-    if s3_client is None:
-        s3_client = boto3.client("s3")
+
 
     for scenario in os.listdir(symbol_dir):
         scenario_path = os.path.join(symbol_dir, scenario)
         if os.path.isdir(scenario_path):
             # Create an S3 key that mirrors the directory structure: symbol/scenarioName.zip
-            s3_key = f"{symbol}/{scenario}.zip"
+            s3_key = f"{back_test_id}/{symbol}/{scenario}.zip"
             compress_and_push_scenario_zip(scenario_path, s3_key, bucket_name, s3_client, back_test_id)

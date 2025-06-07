@@ -25,7 +25,7 @@ def download_and_read_minute_data(symbol, s3_client, output_dir=None, back_test_
         raise ValueError("MOCHI_DATA_BUCKET environment variable not set")
 
     # Construct the S3 key for the file
-    base_key = f"stocks/{symbol.split('_')[0]}/polygon/{symbol}.csv.lzo"
+    base_key = f"{symbol.split('_')[0]}/polygon/{symbol}.csv.lzo"
     s3_key = f"{back_test_id}/{base_key}" if back_test_id else base_key
 
     print(f"Downloading minute data for {symbol} from s3://{data_bucket}/{s3_key}")
